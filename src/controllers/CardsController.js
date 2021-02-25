@@ -1,4 +1,32 @@
+const {validationResult, matchedData} = require('express-validator');
 const axios = require('axios');
+const mongoose = require('mongoose');
+const CardModel = require('../models/Card');
+
+exports.add = async (req, res) => {
+
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        res.status(400).json({error: errors.mapped()});
+        return;
+    }
+
+    const newCard = new CardModel(matchedData(req));
+
+    try{
+        await newCard.save();
+        res.status(201).json({
+            status: "success",
+            message: "Card created successfully!",
+            card: newCard
+        });
+    }catch(error){
+        res.status(500).json({
+            status: "error",
+            error:error.message
+        });
+    }
+}
 
 exports.getFuzzyCard = async (req, res) => {
     let name = req.params.name;
