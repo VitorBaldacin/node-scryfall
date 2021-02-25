@@ -19,4 +19,4 @@ exports.add = checkSchema({
     text:{
         notEmpty:false
     }
-})
+});

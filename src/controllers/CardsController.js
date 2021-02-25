@@ -30,7 +30,36 @@ exports.add = async (req, res) => {
 
 exports.all = async (req, res) => {
     let cards = await CardModel.find();
-    res.status(200).json({cards});
+    res.status(200).json({
+        status:"success",
+        cards
+    });
+}
+
+exports.getSlug = async (req, res) => {
+    let slug = req.params.slug;
+    if(!slug){
+        res.status(400).json({
+            status: "error",
+            error:"Card slug cannot be empty!"
+        });
+        return;
+    }
+
+    let card = await CardModel.findOne({slug});
+
+    if(!card){
+        res.status(200).json({
+            status: "success",
+            error:"No cards found with this slug"
+        });
+        return;
+    }
+
+    res.status(200).json({
+        status:"success",
+        card
+    });
 }
 
 exports.getFuzzyCard = async (req, res) => {
