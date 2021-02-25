@@ -28,6 +28,11 @@ exports.add = async (req, res) => {
     }
 }
 
+exports.all = async (req, res) => {
+    let cards = await CardModel.find();
+    res.status(200).json({cards});
+}
+
 exports.getFuzzyCard = async (req, res) => {
     let name = req.params.name;
     
