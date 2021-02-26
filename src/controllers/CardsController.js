@@ -2,6 +2,7 @@ const {validationResult, matchedData} = require('express-validator');
 const axios = require('axios');
 const mongoose = require('mongoose');
 const CardModel = require('../models/Card');
+const slugFunction = require('slug');
 
 exports.add = async (req, res) => {
 
@@ -60,6 +61,54 @@ exports.getSlug = async (req, res) => {
         status:"success",
         card
     });
+}
+
+exports.update = async (req, res) => {
+
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        res.status(400).json({error: errors.mapped()});
+        return;
+    }
+
+    const newCard = new CardModel(matchedData(req));
+
+    let slug = req.params.slug;
+    if(!slug){
+        res.status(400).json({
+            status: "error",
+            error:"Card slug cannot be empty!"
+        });
+        return;
+    }
+
+    newCard.slug = slugFunction(newCard.name, {lower:true});
+
+    //removendo o _id antes de fazer o update
+    const newCardNoId = newCard.toObject();
+    delete newCardNoId._id;
+
+    try{
+        const updatadeCard = await CardModel.findOneAndUpdate(
+            {slug},
+            newCardNoId,
+            {
+                new:true,
+                runValidators:true
+            }
+        );
+
+        res.status(200).json({
+            status: "success",
+            message: "Card updated successfully!",
+            card: updatadeCard
+        });
+    }catch(error){
+        res.status(500).json({
+            status: "error",
+            error:error.message
+        });
+    }
 }
 
 exports.getFuzzyCard = async (req, res) => {

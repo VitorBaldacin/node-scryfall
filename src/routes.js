@@ -12,6 +12,7 @@ router.get('/ping', (req, res) => {
 router.get('/card', CardsController.all);
 router.get('/card/:slug', CardsController.getSlug);
 router.post('/card', CardsValidator.add, CardsController.add);
+router.put('/card/:slug', CardsValidator.update, CardsController.update);
 router.get('/cards/named/fuzzy/:name', CardsController.getFuzzyCard);
 router.get('/cards/search/:text', CardsController.getTextCard);
 
